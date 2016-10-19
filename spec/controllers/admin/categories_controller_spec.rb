@@ -4,6 +4,7 @@ describe Admin::CategoriesController do
   render_views
 
   before(:each) do
+    Blog.delete_all
     Factory(:blog)
     #TODO Delete after removing fixtures
     Profile.delete_all
@@ -19,7 +20,16 @@ describe Admin::CategoriesController do
   it "test_new" do
     get :new
     assert_response :success
+    assert_template 'new'
   end
+  
+  it "test_save" do
+    post :new, category: { name: "Programming", permalink: "programming", keywords: "Ruby", description: "Ruby is fun" }
+    assert_response :redirect, action: :index
+    _category = Category.find_by_name("Programming")
+    assert_not_nil _category
+  end
+  
   
 
   describe "test_edit" do
