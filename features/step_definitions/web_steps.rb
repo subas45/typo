@@ -41,12 +41,31 @@ Given /^the blog is set up$/ do
                 :profile_id => 1,
                 :name => 'admin',
                 :state => 'active'})
+  
+  User.create!({:login => 'non_admin',
+                :password => 'bbbbbbb',
+                :email => 'john@snow.com',
+                :profile_id => 2,
+                :name => 'non-admin',
+                :state => 'active'})    
 end
 
 And /^I am logged into the admin panel$/ do
   visit '/accounts/login'
   fill_in 'user_login', :with => 'admin'
   fill_in 'user_password', :with => 'aaaaaaaa'
+  click_button 'Login'
+  if page.respond_to? :should
+    page.should have_content('Login successful')
+  else
+    assert page.has_content?('Login successful')
+  end
+end
+
+And /^I am logged in as non admin user$/ do
+  visit '/accounts/login'
+  fill_in 'user_login', :with => 'non_admin'
+  fill_in 'user_password', :with => 'bbbbbbb'
   click_button 'Login'
   if page.respond_to? :should
     page.should have_content('Login successful')

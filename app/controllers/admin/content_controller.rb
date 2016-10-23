@@ -84,6 +84,11 @@ class Admin::ContentController < Admin::BaseController
       nil
     end
   end
+  
+  def merge
+    
+  end
+  
 
   def autosave
     id = params[:id]

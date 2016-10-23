@@ -183,6 +183,7 @@ describe Admin::ContentController do
   describe 'insert_editor action' do
 
     before do
+      Blog.delete_all
       Factory(:blog)
       @user = Factory(:user, :profile => Factory(:profile_admin, :label => Profile::ADMIN))
       request.session = { :user => @user.id }
@@ -466,6 +467,7 @@ describe Admin::ContentController do
   describe 'with admin connection' do
 
     before do
+      Blog.delete_all
       Factory(:blog)
       #TODO delete this after remove fixture
       Profile.delete_all
@@ -612,6 +614,7 @@ describe Admin::ContentController do
   describe 'with publisher connection' do
 
     before :each do
+      Blog.delete_all
       Factory(:blog)
       @user = Factory(:user, :text_filter => Factory(:markdown), :profile => Factory(:profile_publisher))
       @article = Factory(:article, :user => @user)
@@ -671,4 +674,27 @@ describe Admin::ContentController do
 
     end
   end
+  
+  describe 'merge articles' do
+     before :each do
+      Blog.delete_all
+      Factory(:blog)
+      @user = Factory(:user, :text_filter => Factory(:markdown), :profile => Factory(:profile_admin, :label => Profile::ADMIN))
+      @user_a = Factory(:user, :login => 'user_a')
+      @user_b = Factory(:user,  :login => 'user_b')
+      @article_a = Factory(:article, :user => @user_a, :title => 'A', :body => 'content of A')
+      @article_b = Factory(:article, :user => @user_b, :title => 'B', :body => 'content of B')
+      request.session = {:user => @user.id}
+    end
+    
+    context 'when not an admin' do
+      it 'should not allow non admin to merge articles' do
+        post :merge, id: @article_a.id, merge_with: @article_b.id
+        flash.should_not be_nil
+        response.should redirect_to(action: :edit, id: @article_a.id)
+      end
+    end
+  
+  end 
+
 end

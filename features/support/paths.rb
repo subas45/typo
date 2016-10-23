@@ -24,6 +24,8 @@ module NavigationHelpers
     when /^the edit category page for "(.*)"$/
       '/admin/categories/edit/' + Category.find_by_name($1).id.to_s
       
+    when /^the edit article page for "(.*)"$/
+      'admin/content/edit/' + Article.find_by_title($1).id.to_s
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:
     #
