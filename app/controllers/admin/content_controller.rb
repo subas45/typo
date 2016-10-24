@@ -3,7 +3,7 @@ require 'base64'
 module Admin; end
 class Admin::ContentController < Admin::BaseController
   layout "administration", :except => [:show, :autosave]
-
+  before_filter :can_user_merge_articles, :only => :merge
   cache_sweeper :blog_sweeper
 
   def auto_complete_for_article_keywords
@@ -86,7 +86,13 @@ class Admin::ContentController < Admin::BaseController
   end
   
   def merge
-    
+    @article = Article.find(params[:id])
+    begin
+      @article.merge!(params[:merge_with])
+    rescue ActiveRecord::RecordNotFound, ArgumentError => edit
+      flash[:error] = _(e.message)  
+    end
+    redirect_to edit_content_path(@article) and return
   end
   
 
@@ -245,4 +251,13 @@ class Admin::ContentController < Admin::BaseController
   def setup_resources
     @resources = Resource.by_created_at
   end
+  
+  private
+  def can_user_merge_articles?
+    if !current_user.admin?
+      flash[:error] = _("Error, you are not allowed to perform this action")
+      redirect_to(action: 'edit', id: params[:id]) and return
+    end
+  end
+  
 end

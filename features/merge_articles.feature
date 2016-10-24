@@ -18,4 +18,7 @@ Feature: Merge articles content
   Scenario: When articles are merged, the merged article should contain the text of both previous articles
     Given I am on the edit article page for "Ruby"
     Then I should see merge_with field  
-    
+    And I press "Merge"
+    Then the article "Ruby" should have body "Rails is popular Ruby framework"
+    And the comment "great piece" should belong to "Ruby"
+    And I should be on the edit article page for "Ruby"
